@@ -1,27 +1,23 @@
 package com.jsitarski.irc.wrappers;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import com.jsitarski.irc.events.ChannelMessageEvent;
 import com.jsitarski.irc.events.IRCDispatcher;
 import com.jsitarski.irc.events.JoinEvent;
+import com.jsitarski.irc.events.LeaveEvent;
 import com.jsitarski.irc.events.MessageEvent;
 import com.jsitarski.irc.events.MessageListener;
 import com.jsitarski.irc.events.PingEvent;
 import com.jsitarski.irc.events.PrivateMessageEvent;
-import com.jsitarski.irc.events.ServerMessageEvent;
-
-import javax.swing.JTextArea;
-
-import java.awt.Color;
-import java.io.IOException;
-
-import javax.swing.JScrollPane;
 
 public class Test extends JFrame implements MessageListener {
 
@@ -73,7 +69,7 @@ public class Test extends JFrame implements MessageListener {
 	@Override
 	public void onMessage(MessageEvent me) {
 		textArea.setText(textArea.getText() + "\n" + me);
-	//	System.out.println(me);
+		// System.out.println(me);
 	}
 
 	@Override
@@ -91,10 +87,6 @@ public class Test extends JFrame implements MessageListener {
 	}
 
 	@Override
-	public void onServerMessage(ServerMessageEvent sMessageEvent) {
-	}
-
-	@Override
 	public void onChannelMessage(ChannelMessageEvent cMessageEvent) {
 		System.out.println(cMessageEvent);
 	}
@@ -102,5 +94,11 @@ public class Test extends JFrame implements MessageListener {
 	@Override
 	public void onPrivateMessage(PrivateMessageEvent pMessageEvent) {
 		System.out.println(pMessageEvent);
+	}
+
+	@Override
+	public void onUserLeave(LeaveEvent lEvent) {
+		// TODO Auto-generated method stub
+
 	}
 }

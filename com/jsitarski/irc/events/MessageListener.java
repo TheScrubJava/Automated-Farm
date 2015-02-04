@@ -10,7 +10,8 @@ public interface MessageListener extends EventListener {
 
 	void onUserJoin(JoinEvent jEvent);
 
-	void onServerMessage(ServerMessageEvent sMessageEvent);
+	
+	void onUserLeave(LeaveEvent lEvent);
 
 	void onChannelMessage(ChannelMessageEvent cMessageEvent);
 

@@ -27,6 +27,7 @@ public class IRCDispatcher {
 	private final String CHANNEL_MESSAGE_SENDER_REGEX = "(:([A-Z]|[a-z]|[0-9]))\\w+";
 	private final String PRIVATE_MESSAGE_REGEX = "(PRIVMSG ([a-z]|[A-Z]|[0-9]))\\w+ :";
 	private final String JOIN_MESSAGE_REGEX = "(JOIN )+(:#)+([A-Z]|[a-z]|[1-9])\\w+";
+	private final String LEAVE_MESSAGE_REGEX = "((PART #)+([A-Z]|[a-z]|[0-9])\\w+)|(QUIT)";
 
 	public IRCClient getClient() {
 		return client;
@@ -107,6 +108,15 @@ public class IRCDispatcher {
 									fireEvent(new JoinEvent(new IRCUser(userName), channelName));
 								}
 							}
+						} else if (message.split(LEAVE_MESSAGE_REGEX, 2).length > 1) {
+							String channelName = "ALL";
+							if (message.split("#").length > 1) {
+								// channel name...
+								channelName = message.split("#")[1];
+							}
+
+							String userName = message.split("!~", 2)[0].substring(1);
+							fireEvent(new LeaveEvent(new IRCUser(userName), channelName));
 						}
 					}
 				}
@@ -138,6 +148,9 @@ public class IRCDispatcher {
 						}
 						if (me instanceof JoinEvent)
 							((MessageListener) el).onUserJoin((JoinEvent) me);
+						if (me instanceof LeaveEvent) {
+							((MessageListener) el).onUserLeave((LeaveEvent) me);
+						}
 					}
 				}
 			}
