@@ -10,9 +10,15 @@ public class JoinEvent extends MessageEvent {
 	 * 
 	 */
 	private static final long serialVersionUID = -196052511340185208L;
+	private String ircChannel;
 
-	public JoinEvent(IRCUser message) {
-		super(message);
+	public JoinEvent(IRCUser user, String ircChannel) {
+		super(user);
+		this.ircChannel = ircChannel;
+	}
+
+	public String getIrcChannelName() {
+		return ircChannel;
 	}
 
 	@Override

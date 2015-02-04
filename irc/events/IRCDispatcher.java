@@ -9,6 +9,7 @@ import java.util.List;
 import com.jsitarski.irc.wrappers.IRCChannel;
 import com.jsitarski.irc.wrappers.IRCClient;
 import com.jsitarski.irc.wrappers.IRCMessage;
+import com.jsitarski.irc.wrappers.IRCUser;
 
 public class IRCDispatcher {
 	private Object lock = new Object();
@@ -25,6 +26,7 @@ public class IRCDispatcher {
 	private final String CHANNEL_MESSAGE_REGEX = "(PRIVMSG #([a-z]|[A-Z]|))\\w+";
 	private final String CHANNEL_MESSAGE_SENDER_REGEX = "(:([A-Z]|[a-z]|[0-9]))\\w+";
 	private final String PRIVATE_MESSAGE_REGEX = "(PRIVMSG ([a-z]|[A-Z]|[0-9]))\\w+ :";
+	private final String JOIN_MESSAGE_REGEX = "(JOIN )+(:#)+([A-Z]|[a-z]|[1-9])\\w+";
 
 	public IRCClient getClient() {
 		return client;
@@ -96,6 +98,16 @@ public class IRCDispatcher {
 								}
 							}
 						}
+
+						else if (message.split(JOIN_MESSAGE_REGEX, 2).length > 1) {
+							if (message.split("#").length > 1) {
+								String channelName = message.split("#")[1];
+								String userName = message.split("!~", 2)[0].substring(1);
+								if (channelName != null && userName != null) {
+									fireEvent(new JoinEvent(new IRCUser(userName), channelName));
+								}
+							}
+						}
 					}
 				}
 			}
@@ -124,6 +136,8 @@ public class IRCDispatcher {
 						if (me instanceof PrivateMessageEvent) {
 							((MessageListener) el).onPrivateMessage((PrivateMessageEvent) me);
 						}
+						if (me instanceof JoinEvent)
+							((MessageListener) el).onUserJoin((JoinEvent) me);
 					}
 				}
 			}
