@@ -12,11 +12,20 @@ import com.jsitarski.utils.JMap;
 
 public class Properties {
 	private final JMap<String, Object> MAP = new JMap<String, Object>();
-	public static final File DEFAULT_FOLDERS = new File(System.getProperty("user.home") + File.separator + "ScrubScripting" + File.separator + "AutoBuyer");
-	public static final File PROPERTIES_FILE = new File(System.getProperty("user.home") + File.separator + "ScrubScripting" + File.separator + "AutoBuyer" + File.separator + "properties.ini");
+	private String scriptName;
 
-	public Properties() {
+	private File DEFAULT_FOLDERS = null;
+	private File PROPERTIES_FILE = null;
+
+	public Properties(final String scriptName) {
+		this.scriptName = scriptName;
+		DEFAULT_FOLDERS = new File(System.getProperty("user.home") + File.separator + "ScrubScripting" + File.separator + scriptName);
+		PROPERTIES_FILE = new File(System.getProperty("user.home") + File.separator + "ScrubScripting" + File.separator + scriptName + File.separator + "properties.ini");
 		loadMap();
+	}
+
+	public String getScriptName() {
+		return scriptName;
 	}
 
 	public JMap<String, Object> getMap() {
@@ -179,30 +188,33 @@ public class Properties {
 	}
 
 	private boolean validatePath() {
-		if (DEFAULT_FOLDERS.exists()) {
+		if (DEFAULT_FOLDERS != null) {
+			if (DEFAULT_FOLDERS.exists()) {
+				if (!PROPERTIES_FILE.canRead())
+					try {
+						new FileWriter(PROPERTIES_FILE, true);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				return true;
+
+			} else {
+				DEFAULT_FOLDERS.mkdirs();
+			}
+
 			if (!PROPERTIES_FILE.canRead())
 				try {
 					new FileWriter(PROPERTIES_FILE, true);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			return true;
-
-		} else {
-			DEFAULT_FOLDERS.mkdirs();
+			return DEFAULT_FOLDERS.exists();
 		}
-
-		if (!PROPERTIES_FILE.canRead())
-			try {
-				new FileWriter(PROPERTIES_FILE, true);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		return DEFAULT_FOLDERS.exists();
+		return false;
 	}
 
 	public static void main(String[] a) {
-		Properties p = new Properties();
+		Properties p = new Properties("Test");
 		p.getMap().printMap();
 		System.out.println(p.getProperty("1"));
 	}
